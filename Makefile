@@ -11,18 +11,23 @@ XSUM ?= md5sum
 BUILD_DIR = $(CURDIR)/builds/$(DISTRO)/$(MACHINE)
 TOPDIR = $(BUILD_DIR)
 DL_DIR = $(CURDIR)/sources
-SSTATE_DIR = $(CURDIR)/builds/$(DISTRO)/$(MACHINE)/sstate-cache
+SSTATE_DIR = $(CURDIR)/builds/$(DISTRO)/sstate-cache
 TMPDIR = $(TOPDIR)/tmp
 DEPDIR = $(TOPDIR)/.deps
 MACHINEBUILD = $(MACHINE)
 export MACHINEBUILD
+
+ifeq ($(MACHINEBUILD),lx1-plus)
+brands=km
+endif
 
 BBLAYERS ?= \
 	$(CURDIR)/meta-openembedded/meta-oe \
 	$(CURDIR)/meta-openembedded/meta-multimedia \
 	$(CURDIR)/meta-openembedded/meta-networking \
 	$(CURDIR)/openembedded-core/meta \
-	$(CURDIR)/meta-oe-alliance \
+	$(CURDIR)/meta-oe-alliance/meta-oe \
+	$(CURDIR)/meta-oe-alliance/meta-brands/meta-$(brands) \
 
 CONFFILES = \
 	$(TOPDIR)/env.source \
@@ -50,7 +55,7 @@ all: init
 	@echo "Openembedded for the oe-alliance environment has been initialized"
 	@echo "properly. Now you can start building your image, by doing either:"
 	@echo
-	@echo "MACHINE=vuuno DISTRO=openvix make image"
+	@echo "MACHINE=lx1_plus DISTRO=eurospeed make image"
 	@echo "	or"
 	@echo "cd $(BUILD_DIR) ; source env.source ; bitbake $(DISTRO)-image"
 	@echo
@@ -59,10 +64,9 @@ $(BBLAYERS):
 	[ -d $@ ] || $(MAKE) $(MFLAGS) update
 
 setupmbuild:
-ifeq ($(MACHINEBUILD),tm2t)
+ifeq ($(MACHINEBUILD),lx1-plus)
 MACHINE=km3000
 MACHINEBUILD=lx1-plus
-
 endif
 
 initialize: init
@@ -171,4 +175,4 @@ $(TOPDIR)/conf/bblayers.conf: $(DEPDIR)/.bblayers.conf.$(BBLAYERS_CONF_HASH)
 $(CONFDEPS):
 	@test -d $(@D) || mkdir -p $(@D)
 	@$(RM) $(basename $@).*
-	@touch $@
+	@touch $@  
