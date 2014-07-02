@@ -60,7 +60,7 @@ $(BBLAYERS):
 
 setupmbuild:
 ifeq ($(MACHINEBUILD),tm2t)
-MACHINE=kmt3000
+MACHINE=km3000
 MACHINEBUILD=lx1-plus
 
 endif
